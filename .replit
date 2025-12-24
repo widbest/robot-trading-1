@@ -1,0 +1,41 @@
+modules = ["python-3.11", "python3"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["gcc-unwrapped", "glibc", "glibcLocales", "libgcc", "zlib"]
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["streamlit", "run", "app.py", "--server.port", "5000"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Advanced Elliott Wave"
+
+[[workflows.workflow]]
+name = "Advanced Elliott Wave"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run advanced_elliott_app.py --server.port 5000"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 40667
+externalPort = 3000
+
+[agent]
+integrations = ["python_openai:1.0.0"]
